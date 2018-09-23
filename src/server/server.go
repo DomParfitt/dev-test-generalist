@@ -45,7 +45,31 @@ func getBikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllBikesHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Received a GET request for all bikes.")
+	fmt.Printf("Received a GET request for all bikes.\n")
+
+	bikes := []bike{}
+
+	for i := 0; i < 5; i++ {
+		bike := &bike{
+			BikeID:      i,
+			Name:        "Dummy Bike",
+			Description: "Placeholder data for a non-existant bike",
+			Price:       "1,000,000",
+		}
+
+		bikes = append(bikes, *bike)
+	}
+
+	json, err := json.Marshal(bikes)
+
+	if err != nil {
+		fmt.Fprintf(w, "Could not retrieve bikes")
+		return
+	}
+
+	fmt.Printf("Returning result %s\n", json)
+
+	fmt.Fprintf(w, "%s", json)
 }
 
 func addBikeHandler(w http.ResponseWriter, r *http.Request) {
