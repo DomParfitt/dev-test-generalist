@@ -3,11 +3,13 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/DomParfitt/dev-test-generalist/src/common"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
+//Serve the API on the given port
 func Serve(port string) {
 	router := mux.NewRouter()
 	router.HandleFunc("/getBike/{bikeID}", getBikeHandler)
@@ -18,13 +20,14 @@ func Serve(port string) {
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
+//Handler for getting a single bike by its ID
 func getBikeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bikeID := vars["bikeID"]
 
 	fmt.Printf("Received a GET request for bike with ID %s.\n", bikeID)
 
-	bike := &bike{
+	bike := &common.Bike{
 		BikeID:      1,
 		Name:        "Dummy Bike",
 		Description: "Placeholder data for a non-existant bike",
@@ -44,13 +47,14 @@ func getBikeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//Handler for getting all bikes
 func getAllBikesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Received a GET request for all bikes.\n")
 
-	bikes := []bike{}
+	bikes := []common.Bike{}
 
 	for i := 0; i < 5; i++ {
-		bike := &bike{
+		bike := &common.Bike{
 			BikeID:      i,
 			Name:        "Dummy Bike",
 			Description: "Placeholder data for a non-existant bike",
@@ -72,13 +76,7 @@ func getAllBikesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", json)
 }
 
+//Handler for adding a new bike to the collection
 func addBikeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Received a POST request to add a new bike.")
-}
-
-type bike struct {
-	BikeID      int
-	Name        string
-	Description string
-	Price       string
 }
