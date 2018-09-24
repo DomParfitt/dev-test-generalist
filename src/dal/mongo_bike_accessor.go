@@ -6,7 +6,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-//MongoBikeAccesor is a concrete implementation of the
+//MongoBikeAccessor is a concrete implementation of the
 //BikeAccessor interface for accessing the data in a
 //MongoDB database
 type MongoBikeAccessor struct {
