@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Could not connect to MongoDB instance at URL: %s", url)
 	}
+	defer bikeAccessor.Close()
 
 	server := server.New(bikeAccessor)
 	server.Serve(port)
