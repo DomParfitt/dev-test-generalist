@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DomParfitt/dev-test-generalist/src/common"
 	"github.com/DomParfitt/dev-test-generalist/src/dal/bike"
 	"github.com/gorilla/mux"
 	"log"
@@ -44,13 +43,6 @@ func (s *Server) getBikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Received a GET request for bike with ID %d.\n", bikeID)
 
-	// bike := &common.Bike{
-	// 	BikeID:      1,
-	// 	Name:        "Dummy Bike",
-	// 	Description: "Placeholder data for a non-existant bike",
-	// 	Price:       "1,000,000",
-	// }
-
 	bike, err := s.bikeAccessor.GetBike(bikeID)
 
 	if err != nil {
@@ -75,18 +67,7 @@ func (s *Server) getBikeHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) getAllBikesHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Received a GET request for all bikes.\n")
 
-	bikes := []common.Bike{}
-
-	for i := 0; i < 5; i++ {
-		bike := &common.Bike{
-			BikeID:      i,
-			Name:        "Dummy Bike",
-			Description: "Placeholder data for a non-existant bike",
-			Price:       "1,000,000",
-		}
-
-		bikes = append(bikes, *bike)
-	}
+	bikes := s.bikeAccessor.GetAllBikes()
 
 	json, err := json.Marshal(bikes)
 
