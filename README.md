@@ -1,76 +1,24 @@
-# Full Stack Dev Task
+# Dev Test
 
-![on my mf bike](favicon.png)
+## Getting Started
 
-Here's a back-end oriented assessment that we'd like you to complete in approx one week.
+### Requirements
+1. Golang v1.11 or higher
 
-We estimate that this task will take about **6-10 hours** of contiguous development.  Feel free to develop in a non-contiguous manner.
-If you start to go way over time then just submit what you have and create a list in your project's **README.md** of anything else that would have liked to add/do given the time.
+### Installation
+Two build files are provided in the root of the project for Linux (build.sh) and Windows (build.bat) respectively. To build the code simple run the relevant file. This will create the file `main.exe` and place it in the `bin/` directory at the root of the project.
 
-### Assignment Details
-To complete this task, you must:
-
-1. Fork this project
-2. Make some reasonable assumptions (and document)
-3. write your code to fulfill the user story below (as much as you see fit)
-4. Document profusely
-5. *OPTIONAL* If you have time, attempt to get some bonus points (see below for assessment criteria)
-
-#### Notes and assumptions
-
-1. **continuously** commit your code
-2. When finished send over the GitHub repo and any other links
-3. You will need to install docker on your machine to get your database working, it is suggested that you use the latest beta version of docker with it's native hosting features for OSX and Windows users.
-4. Provide CURL based examples on how to interact with your API (GET and POST)
-5. The database layer is provided to you via Mongo in a Docker container, the instructions below will start the `Mongo 3.3` database on your machine and populate it with sample bike data for your api
-6. API API must output JSON in its responses
-7. You must include installation and setup instructions in your **README.md**
-8. Please list any other assumptions you may have made
-9. Use any modern language you see fit to get the job done, obviously it will have to work with Mongo 3.3
-10. Feel free to a micro-framework such as Flask (Python), Express (Node), Sinatra (Ruby), Slim (PHP), Goji (Go)
-
-#### The User story
-
-- As a front-end dev user, or as a command line dev user
-- Assuming that all authentication and security has been handled by another layer in the application and is sorted
-- Assuming I'm connected to the Mongo database supplied (see DB section below)
-- I would like API endpoints that model the bike schema (see [Sample Bike Schema](schema/bike.json))
-  - I would like to be able to see all bikes (`GET` the entire collection)
-  - I would like to see an individual bike (`GET` an item) given its `bikeId`
-  - I would like to add a new bike (`POST` to collection)
-  - I would like the interface to the API to be RESTful
-  - I would like to interact with the API using tools like [curl](https://curl.haxx.se/) or [postman](https://www.getpostman.com/)
-  - I am not concerned DELETE and PUT endpoints and do not need them
-
-### Assessment Criteria
-
-Your application will be assessed on the following criteria (in order of importance):
-
-- Approach and thinking
-- Code organisation, commenting and use of GitHub
-- Quality of setup instructions in your **README.md**
-- Quality of api documentation in your **README.md**
-- Maintainability
-- **bonus points** If you unit test your models and include test instructions
-- **bonus points** If you can host the api code in a public docker container and link it to the Mongo Docker container with instructions
-
-We're trying to see your thought processes with this task. What's more important to us is how you approach the task, rather than the actual final output itself.
-
-Looking forward to seeing your project :-)
-
-## DB and Schema
-
-### Sample Bike schema
-To give you an idea of the documents (records) of what's in the Mongo `bike` collection in the `test` db.  This is a sample schema for bikes, you can add/modify fields as you see fit:
-
+### Running the Code
+1. Install the binary from the above instructions.
+2. Run the binary from the command line using the following command:
 ```
-{
-  "id": 1,
-  "name": "Litening C:68 super trike",
-  "description": "The trike for professional 4 year old cyclists.  Full carbon frame, complete with novelty horn",
-  "price": "5006.33"
-}
+main <url> <db_name> <collection_name> <port>
 ```
+Where:
+ - `url` is the URL that the MongoDB instance is being served on.
+ - `db_name` is the name of the DB on the MongoDB instance
+ - `collection_name` is the name of the collection on the given DB holding the bike data
+ - `port` is the port that you wish to serve the API on
 
 ### Database instructions
 
@@ -91,11 +39,78 @@ docker exec jlmongo mongoimport --collection bike /schema/bike.json --jsonArray
 
 ```
 
-#### DB Notes
+## API
+All calls to the API return a JSON Response object which conforms to the below schema:
+```
+Response {
+  Success: boolean
+  Bikes: Bike[]
+  ErrorMsg: string
+}
+```
 
-- You can test if your db works by running `docker exec jlmongo mongo --eval "db.getCollection('bike').find({})"` 
-- If you shutdown your machine or do something bad to your database, simply trash your db and follow the instructions again in part 3
-- There is no username and password for your local db
-- The default database is `test`, the default collection is `bike` with the data in it
-- The local Mongo instance sits on the default **TCP:27017** port you may have to tweak this if you're already running a local Mongo instance of your own
-- We suggest you use a Mongo GUI tool like [Robomongo](https://robomongo.org/) to make your life easier
+Successful requests return a `Response` with `Success` set to `true`, the `Bikes` array containing any relevant bike data and `ErrorMsg` set to the empty string.
+
+Unsuccessful requests return a `Response` ith `Success` set to `false`, the `Bikes` array empty and `ErrorMsg` containing details of the error.
+
+
+`Bikes` are defined as follows:
+```
+Bike {
+  BikeID: int
+  Name: string
+  Description: string
+  Price: string
+}
+```
+A valid `Bike` object requires at least the `Name` field be present.
+
+### Get Bike
+```
+/getBike/{bikeID}
+```
+`GET` request to retrieve a single bike by its ID. If there is a bike with the given ID a success `Response` is returned with a single bike in the `Bikes` array, which matches the provided ID.
+
+#### Example
+```
+curl -s localhost:8080/getBike/1
+```
+
+### Get All Bikes
+```
+/getAllBikes
+```
+`GET` request to retrieve all bikes held in the collection. 
+
+#### Example
+```
+curl -s localhost:8080/getAllBikes
+```
+
+### Add Bike
+```
+/addBike
+```
+`POST` request to add a new bike to the collection. The data for the `POST` request must be a valid `Bike` object, i.e. must have at least a `Name`.
+
+If a `BikeID` is provided then the `Bike` will be added only if there is not already an existing `Bike` with the same ID. If no `BikeID` is provided then the `Bike` will be added with the next available `BikeID`.
+
+#### Examples
+##### Bike with just a Name
+```
+curl -s localhost:8080/addNewBike -d '{"Name": "New Bike"}'
+```
+
+##### Bike with ID and Name
+```
+curl -s localhost:8080/addNewBike -d '{"BikeID": 10, "name": "New Bike"}'
+```
+
+##### Bike with all fields
+```
+curl -s localhost:8080/addNewBike -d '{"BikeID": 10, "name": "New Bike", "Description": "A new bike" "Price": "1000"}'
+```
+
+## Assumptions
+1. Security/authentication will be handled by another layer.
+2. 
