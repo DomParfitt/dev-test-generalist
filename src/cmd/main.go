@@ -41,7 +41,7 @@ func main() {
 
 //Print the usage of this utility
 func printUsage() {
-	fmt.Println("Usage: main url db_name collection_name port")
+	fmt.Println("Usage: main <url> <db_name> <collection_name> <port>")
 	fmt.Println("\turl             - URL of the DB instance")
 	fmt.Println("\tdb_name         - Name of the DB")
 	fmt.Println("\tcollection_name - Name of the collection in the given DB")
