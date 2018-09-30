@@ -28,7 +28,7 @@ func (s *Server) Serve(port string) {
 	router.HandleFunc("/getAllBikes", s.getAllBikesHandler)
 	router.HandleFunc("/addBike", s.addBikeHandler)
 
-	common.Log(fmt.Sprintf("Listening on port %s\n", port))
+	common.Log(fmt.Sprintf("Listening on port %s", port))
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
@@ -44,7 +44,7 @@ func (s *Server) getBikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.Log(fmt.Sprintf("Received a GET request for bike with ID %d.\n", bikeID))
+	common.Log(fmt.Sprintf("Received a GET request for bike with ID %d.", bikeID))
 
 	//Get the bike using the DAL
 	bike, err := s.bikeAccessor.GetBike(bikeID)
@@ -85,7 +85,7 @@ func (s *Server) addBikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.Log(fmt.Sprintf("Received a POST request to add a new bike:\n\t%v\n", bike))
+	common.Log(fmt.Sprintf("Received a POST request to add a new bike:\n\t%v", bike))
 
 	//Require bike to have at least a name, if not return error
 	if bike.Name == "" {
@@ -129,7 +129,7 @@ func writeResponse(w http.ResponseWriter, response Response) {
 		fmt.Fprint(w, "There was an error processing the request.")
 	}
 
-	common.Log(fmt.Sprintf("Returning response %s\n", json))
+	common.Log(fmt.Sprintf("Returning response %s", json))
 	fmt.Fprintf(w, "%s", json)
 }
 
