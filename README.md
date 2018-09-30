@@ -113,4 +113,5 @@ curl -s localhost:8080/addNewBike -d '{"BikeID": 10, "name": "New Bike", "Descri
 
 ## Assumptions
 1. Security/authentication will be handled by another layer.
-2. 
+2. A `Bike` must have at least a `Name` to be considered valid
+3. Attempting to add a `Bike` with a `BikeID` that is already used results in an error, rather than updating/overwriting the existing `Bike`
