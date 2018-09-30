@@ -89,24 +89,28 @@ func (m MongoBikeAccessor) GetAllBikes() []common.Bike {
 }
 
 //AddBike to the collection of Bikes in the MongoDB instance
-func (m MongoBikeAccessor) AddBike(bike common.Bike) error {
+func (m MongoBikeAccessor) AddBike(bike common.Bike) (common.Bike, error) {
 	common.Log(fmt.Sprintf("Attempting to add new bike: %v", bike))
 
 	_, err := m.GetBike(bike.BikeID)
 	if err == nil {
 		common.Log(fmt.Sprintf("Attempted to add bike with existing ID: %d", bike.BikeID))
-		return fmt.Errorf("Cannot add new bike as there is an existing bike with ID %d", bike.BikeID)
+		return bike, fmt.Errorf("Cannot add new bike as there is an existing bike with ID %d", bike.BikeID)
+	}
+
+	if bike.BikeID == 0 {
+		bike.BikeID = m.getNextId()
 	}
 
 	err = m.collection.Insert(bike)
 
 	if err != nil {
 		common.Log(err.Error())
-		return err
+		return bike, err
 	}
 
 	common.Log("Successfully added a new bike.")
-	return nil
+	return bike, nil
 }
 
 //Close the connection to the MongoDB instance
@@ -123,4 +127,15 @@ func contains(needle string, haystack []string) bool {
 	}
 
 	return false
+}
+
+func (m MongoBikeAccessor) getNextId() int {
+	bikes := m.GetAllBikes()
+	nextID := 0
+	for _, bike := range bikes {
+		if bike.BikeID > nextID {
+			nextID = bike.BikeID
+		}
+	}
+	return nextID + 1
 }

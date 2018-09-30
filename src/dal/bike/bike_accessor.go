@@ -9,5 +9,5 @@ import (
 type Accessor interface {
 	GetBike(id int) (common.Bike, error)
 	GetAllBikes() []common.Bike
-	AddBike(bike common.Bike) error
+	AddBike(bike common.Bike) (common.Bike, error)
 }

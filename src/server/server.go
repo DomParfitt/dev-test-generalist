@@ -95,7 +95,7 @@ func (s *Server) addBikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Add the bike using the DAL
-	err = s.bikeAccessor.AddBike(bike)
+	bike, err = s.bikeAccessor.AddBike(bike)
 
 	//If we couldn't add the bike log the error and return it
 	if err != nil {
