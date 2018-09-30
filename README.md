@@ -4,9 +4,14 @@
 
 ### Requirements
 1. Golang v1.11 or higher
+2. Git
 
 ### Installation
-Two build files are provided in the root of the project for Linux (build.sh) and Windows (build.bat) respectively. To build the code simple run the relevant file. This will create the file `main.exe` and place it in the `bin/` directory at the root of the project.
+1. Clone the repository into the desired location
+```
+git clone https://github.com/DomParfitt/dev-test-generalist.git
+```
+2. Two build files are provided in the root of the project for Linux (build.sh) and Windows (build.bat) respectively. To build the code simple run the relevant file. This will create the file `main.exe` and place it in the `bin/` directory at the root of the project.
 
 ### Running the Code
 1. Install the binary from the above instructions.
